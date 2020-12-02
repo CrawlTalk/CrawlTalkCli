@@ -12,8 +12,8 @@ import (
 const (
 	version = "0.01"
 	//	defaultServer = "127.0.0.1"
-	//	defaultServer = "35.228.157.42"
-	defaultServer = "192.168.60.173"
+	defaultServer = "35.228.157.42"
+	// defaultServer = "192.168.60.173"
 	defaultPort   = "8000"
 	defaultScheme = "ws"
 	defaultPath   = "/ws"
