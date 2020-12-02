@@ -28,7 +28,7 @@ func authUser(login string, password string) (int64, string) {
 	log.Println("Sending:", string(body))
 	err := serverConnection.WriteMessage(
 		websocket.TextMessage,
-		[]byte(string(body)),
+		body,
 	)
 	if err != nil {
 		log.Println("write:", err)
@@ -67,7 +67,7 @@ func registerUser(login string, password string, username string, email string) 
 	log.Println("Sending:", string(body))
 	err := serverConnection.WriteMessage(
 		websocket.TextMessage,
-		[]byte(string(body)),
+		body,
 	)
 	if err != nil {
 		log.Println("write:", err)
@@ -104,7 +104,7 @@ func requestFlowList() {
 	log.Println("Sending:", string(body))
 	err := serverConnection.WriteMessage(
 		websocket.TextMessage,
-		[]byte(string(body)),
+		body,
 	)
 	if err != nil {
 		log.Println("write:", err)
