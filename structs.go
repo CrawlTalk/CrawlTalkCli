@@ -8,8 +8,10 @@ type ErrorsT struct {
 }
 
 type DataT struct {
-	User []UserT `json:"user,omitempty"`
-	Flow []FlowT `json:"flow,omitempty"`
+	Time    int        `json:"time,omitempty"`
+	User    []UserT    `json:"user,omitempty"`
+	Flow    []FlowT    `json:"flow,omitempty"`
+	Message []MessageT `json:"message,omitempty"`
 }
 
 type FlowT struct {
@@ -33,4 +35,19 @@ type MoreliaT struct {
 	Type   string   `json:"type"`
 	Data   DataT    `json:"data,omitempty"`
 	Errors *ErrorsT `json:"errors,omitempty"`
+}
+
+type MessageT struct {
+	ID           int    `json:"id,omitempty"`
+	Text         string `json:"text,omitempty"`
+	FromUserUUID int    `json:"from_user_uuid,omitempty"`
+	Time         int    `json:"time,omitempty"`
+	FromFlowID   int    `json:"from_flow_id,omitempty"`
+	FilePicture  string `json:"file_picture,omitempty"`
+	FileVideo    string `json:"file_video,omitempty"`
+	FileAudio    string `json:"file_audio,omitempty"`
+	FileDocument string `json:"file_document,omitempty"`
+	Emoji        string `json:"emoji,omitempty"`
+	EditedTime   int    `json:"edited_time,omitempty"`
+	EditedStatus bool   `json:"edited_status,omitempty"`
 }

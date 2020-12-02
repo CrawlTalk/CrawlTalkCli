@@ -119,8 +119,10 @@ func awaitUserCommandOrExit(mode string) bool {
 }
 
 func EnterToFlow(flowId int) {
+	var lastMessageTime = 1
 	fmt.Println(color.CyanString("Opened flow ID %d", flowId))
 	for {
+		lastMessageTime = requestMessagesList(flowId, lastMessageTime) + 1
 		if awaitUserCommandOrExit("message_list") {
 			break
 		}

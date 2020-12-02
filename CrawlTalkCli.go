@@ -2,18 +2,19 @@ package main
 
 import (
 	"flag"
-	"log"
-	"net/url"
-
 	"github.com/fatih/color"
 	"github.com/gorilla/websocket"
+	"log"
+	"net/url"
+	"os"
+	"sync"
 )
 
 const (
 	version = "0.01"
 	//	defaultServer = "127.0.0.1"
-	defaultServer = "35.228.157.42"
-	// defaultServer = "192.168.60.173"
+	// defaultServer = "35.228.157.42"
+	defaultServer = "192.168.60.173"
 	defaultPort   = "8000"
 	defaultScheme = "ws"
 	defaultPath   = "/ws"
@@ -31,24 +32,50 @@ var (
 	authId                 = ""
 	serverConnection *websocket.Conn
 	flagNoColor      = flag.Bool("no-color", false, "Disable color output")
+	mu               sync.Mutex
 )
 
 func main() {
-	log.SetFlags(0)
+	logfile, err := os.OpenFile("CrawlTalkCli.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer logfile.Close()
+	log.SetOutput(logfile)
+
 	parseFlags()
 	printBanner()
 	requestServerUrl()
 	connectToServer()
 	defer serverConnection.Close()
-	requestLoginAndConnect()
-	if authId != "" {
-		for {
-			requestFlowList()
-			if awaitUserCommandOrExit("flow_list") {
-				break
+
+	//go func() {
+	//	for {
+	//		time.Sleep(20)
+	//		mu.Lock()
+	//		err := serverConnection.WriteMessage(websocket.PingMessage, []byte{})
+	//		mu.Unlock()
+	//		if err != nil {
+	//			log.Println("write:", err)
+	//			return
+	//		} else {
+	//			log.Println("ping sent")
+	//		}
+	//	}
+	//}()
+
+	for {
+		requestLoginAndConnect()
+		if authId != "" {
+			for {
+				requestFlowList()
+				if awaitUserCommandOrExit("flow_list") {
+					break
+				}
 			}
 		}
 	}
+
 }
 
 func parseFlags() {
