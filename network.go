@@ -9,6 +9,16 @@ import (
 	"strconv"
 )
 
+func sendJson(body []byte) {
+	log.Println("Sending:", string(body))
+	err := serverConnection.WriteMessage(
+		websocket.TextMessage,
+		body)
+	if err != nil {
+		log.Println("write:", err)
+	}
+}
+
 func authUser(login string, password string) (int64, string) {
 	request := MoreliaT{
 		Type: "auth",
@@ -24,22 +34,18 @@ func authUser(login string, password string) (int64, string) {
 
 	body, _ := json.Marshal(request)
 
-	log.Println("Sending:", string(body))
-	mu.Lock()
-	err := serverConnection.WriteMessage(
-		websocket.TextMessage,
-		body,
-	)
-	mu.Unlock()
-	if err != nil {
-		log.Println("write:", err)
-		return 0, ""
-	}
+	sendJson(body)
 
 	var response MoreliaT
 	if err := serverConnection.ReadJSON(&response); err != nil {
 		log.Println(err)
 	}
+
+	if response.Errors == nil {
+		connectToServer()
+		return authUser(login, password)
+	}
+
 	log.Println(response.Errors.Code, response.Errors.Status, response.Errors.Detail)
 	if response.Errors.Code == 200 {
 		return response.Data.User[0].UUID, response.Data.User[0].AuthId
@@ -65,23 +71,18 @@ func registerUser(login string, password string, username string, email string) 
 
 	body, _ := json.Marshal(request)
 
-	log.Println("Sending:", string(body))
-	mu.Lock()
-	err := serverConnection.WriteMessage(
-		websocket.TextMessage,
-		body,
-	)
-	mu.Unlock()
-
-	if err != nil {
-		log.Println("write:", err)
-		return 0, ""
-	}
+	sendJson(body)
 
 	var response MoreliaT
 	if err := serverConnection.ReadJSON(&response); err != nil {
 		log.Println(err)
 	}
+
+	if response.Errors == nil {
+		connectToServer()
+		return registerUser(login, password, username, email)
+	}
+
 	log.Println(response.Errors.Code, response.Errors.Status, response.Errors.Detail)
 	if response.Errors.Code == 201 {
 		return response.Data.User[0].UUID, response.Data.User[0].AuthId
@@ -105,22 +106,19 @@ func requestFlowList() {
 
 	body, _ := json.Marshal(request)
 
-	log.Println("Sending:", string(body))
-	mu.Lock()
-	err := serverConnection.WriteMessage(
-		websocket.TextMessage,
-		body,
-	)
-	mu.Unlock()
-	if err != nil {
-		log.Println("write:", err)
-		return
-	}
+	sendJson(body)
 
 	var response MoreliaT
 	if err := serverConnection.ReadJSON(&response); err != nil {
 		log.Println(err)
 	}
+
+	if response.Errors == nil {
+		connectToServer()
+		requestFlowList()
+		return
+	}
+
 	log.Println(response.Errors.Code, response.Errors.Status, response.Errors.Detail)
 	if response.Errors.Code == 200 {
 		fmt.Println(color.CyanString("Flow list:"))
@@ -137,23 +135,16 @@ func requestFlowList() {
 
 }
 
-func connectToServer() {
-	fmt.Printf("Connecting to %s\n", color.BlueString(serverUrl.String()))
-
+func connectToServer() bool {
 	var err error
-
+	log.Printf("Connecting to: %s\n", serverUrl.String())
 	serverConnection, _, err = websocket.DefaultDialer.Dial(serverUrl.String(), nil)
 	if err != nil {
 		log.Fatal("dial:", err)
+		return false
 	}
-
-	serverConnection.SetPongHandler(func(str string) error {
-		log.Println("pong received", str)
-		return nil
-	})
-
-	//defer serverConnection.Close()
-	fmt.Println(color.YellowString("Connected successfully!"))
+	log.Printf("Connection established.\n")
+	return true
 }
 
 func requestMessagesList(flowId int, lastMessageTime int) int {
@@ -177,22 +168,18 @@ func requestMessagesList(flowId int, lastMessageTime int) int {
 
 	body, _ := json.Marshal(request)
 
-	log.Println("Sending:", string(body))
-	mu.Lock()
-	err := serverConnection.WriteMessage(
-		websocket.TextMessage,
-		body,
-	)
-	mu.Unlock()
-	if err != nil {
-		log.Println("write:", err)
-		return lastMessageTime
-	}
+	sendJson(body)
 
 	var response MoreliaT
 	if err := serverConnection.ReadJSON(&response); err != nil {
 		log.Println(err)
 	}
+
+	if response.Errors == nil {
+		connectToServer()
+		return requestMessagesList(flowId, lastMessageTime)
+	}
+
 	log.Println(response.Errors.Code, response.Errors.Status, response.Errors.Detail)
 	if response.Errors.Code == 200 {
 		for _, message := range response.Data.Message {

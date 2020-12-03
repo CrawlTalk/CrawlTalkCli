@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/fatih/color"
 	"github.com/gorilla/websocket"
 	"log"
@@ -46,36 +47,24 @@ func main() {
 	parseFlags()
 	printBanner()
 	requestServerUrl()
-	connectToServer()
-	defer serverConnection.Close()
+	fmt.Printf("Connecting to %s\n", color.BlueString(serverUrl.String()))
+	if connectToServer() {
+		fmt.Println(color.YellowString("Connected successfully!"))
 
-	//go func() {
-	//	for {
-	//		time.Sleep(20)
-	//		mu.Lock()
-	//		err := serverConnection.WriteMessage(websocket.PingMessage, []byte{})
-	//		mu.Unlock()
-	//		if err != nil {
-	//			log.Println("write:", err)
-	//			return
-	//		} else {
-	//			log.Println("ping sent")
-	//		}
-	//	}
-	//}()
+		defer serverConnection.Close()
 
-	for {
-		requestLoginAndConnect()
-		if authId != "" {
-			for {
-				requestFlowList()
-				if awaitUserCommandOrExit("flow_list") {
-					break
+		for {
+			requestLoginAndConnect()
+			if authId != "" {
+				for {
+					requestFlowList()
+					if awaitUserCommandOrExit("flow_list") {
+						break
+					}
 				}
 			}
 		}
 	}
-
 }
 
 func parseFlags() {
