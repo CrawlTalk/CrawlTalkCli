@@ -191,7 +191,7 @@ func requestMessagesList(flowId int, lastMessageTime int) int {
 				color.CyanString(strconv.Itoa(message.FromUserUUID)),
 				color.CyanString(message.Text))
 		}
-		return lastMessageTime
+		return lastMessageTime + 1
 	} else {
 		return lastMessageTime
 	}

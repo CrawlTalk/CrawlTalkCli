@@ -94,6 +94,10 @@ func awaitUserCommandOrExit(mode string) bool {
 			if strings.HasPrefix(lowCaseCommand, "/create") {
 				return true
 			}
+			if strings.HasPrefix(lowCaseCommand, "/help") {
+				PrintHelp()
+				return false
+			}
 			if flowId, err := strconv.Atoi(lowCaseCommand); err != nil {
 				fmt.Println(color.RedString("Unknown command"))
 			} else {
@@ -112,17 +116,37 @@ func awaitUserCommandOrExit(mode string) bool {
 			if strings.HasPrefix(lowCaseCommand, "/exit") {
 				return true
 			}
+			if strings.HasPrefix(lowCaseCommand, "/inception") {
+				lastMessageTime = 1
+				return false
+			}
+			if strings.HasPrefix(lowCaseCommand, "/help") {
+				PrintHelp()
+				return false
+			}
 			return false
 		}
 	}
 	return false
 }
 
+func PrintHelp() {
+	fmt.Println(color.HiBlueString("Available commands:"))
+	fmt.Println(color.HiBlueString("/help - this help page"))
+	fmt.Println()
+	fmt.Println(color.HiBlueString("Flow list mode:"))
+	fmt.Println(color.HiBlueString("/exit - exit from program to command prompt"))
+	fmt.Println()
+	fmt.Println(color.HiBlueString("In flow mode:"))
+	fmt.Println(color.HiBlueString("/exit - exit to flow list"))
+	fmt.Println(color.HiBlueString("/inception - show all flow messages from beginning"))
+}
+
 func EnterToFlow(flowId int) {
-	var lastMessageTime = 1
+	lastMessageTime = 1
 	fmt.Println(color.CyanString("Opened flow ID %d", flowId))
 	for {
-		lastMessageTime = requestMessagesList(flowId, lastMessageTime) + 1
+		lastMessageTime = requestMessagesList(flowId, lastMessageTime)
 		if awaitUserCommandOrExit("message_list") {
 			break
 		}

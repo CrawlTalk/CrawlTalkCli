@@ -32,6 +32,7 @@ var (
 	uuid             int64 = 0
 	authId                 = ""
 	serverConnection *websocket.Conn
+	lastMessageTime  int
 	flagNoColor      = flag.Bool("no-color", false, "Disable color output")
 	mu               sync.Mutex
 )
