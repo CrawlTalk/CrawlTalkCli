@@ -6,8 +6,8 @@ Golang command-line client compatible with [MoreliaTalk] server and protocol.
 
 ## Release
 
-## Instruction
-###Command-line options
+## Command-line options
+
   -email string
   
         Default email. For registration only. If specified client will not request it interactive.
@@ -47,12 +47,13 @@ Golang command-line client compatible with [MoreliaTalk] server and protocol.
   -username string
   
         Default username. For registration only. If specified client will not request it interactive.
-###Available commands in interactive mode:
+
+## Available commands in interactive mode:
 * /help - this help page
-####Flow list mode:
+## Flow list mode:
 * /exit - exit from program to command prompt
 * /create - create new flow
-####In flow mode:
+## In flow mode:
 * /exit - exit to flow list
 * /inception - show all flow messages from beginning
 
