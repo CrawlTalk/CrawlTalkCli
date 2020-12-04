@@ -124,10 +124,12 @@ func awaitUserCommandOrExit(mode string) bool {
 		} else {
 			lowCaseCommand := strings.ToLower(command)
 			if strings.HasPrefix(lowCaseCommand, "/exit") {
+				println("1")
 				return true
 			}
 			if strings.HasPrefix(lowCaseCommand, "/create") {
-				return true
+				requestFlowParam()
+				return false
 			}
 			if strings.HasPrefix(lowCaseCommand, "/help") {
 				PrintHelpInteractive()
@@ -176,14 +178,37 @@ func EnterToFlow(flowId int) {
 	}
 }
 
+func PrintErrorCode(action string, code int, text string) {
+	fmt.Println(color.YellowString("%s result: %d (%s)", action, code, text))
+}
+
 func PrintHelpInteractive() {
 	fmt.Println(color.HiBlueString("Available commands in interactive mode:"))
 	fmt.Println(color.HiBlueString("/help - this help page"))
 	fmt.Println()
 	fmt.Println(color.HiBlueString("Flow list mode:"))
 	fmt.Println(color.HiBlueString("/exit - exit from program to command prompt"))
+	fmt.Println(color.HiBlueString("/create - create new flow"))
 	fmt.Println()
 	fmt.Println(color.HiBlueString("In flow mode:"))
 	fmt.Println(color.HiBlueString("/exit - exit to flow list"))
 	fmt.Println(color.HiBlueString("/inception - show all flow messages from beginning"))
+}
+
+func requestFlowParam() {
+	var flowName string
+	var flowType string
+	var userId int64
+	fmt.Printf("Enter flow name: ")
+	fmt.Scanln(&flowName)
+	fmt.Printf("Enter flow type (group, channel, chat) %s: ", color.GreenString("[%s]", defaultFlowType))
+	fmt.Scanln(&flowType)
+	if flowType == "" {
+		flowType = defaultFlowType
+	}
+	if strings.ToLower(flowType) == "chat" {
+		fmt.Printf("Enter second user uuid: ")
+		fmt.Scanln(&userId)
+	}
+	addFlow(flowName, flowType, userId)
 }

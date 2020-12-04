@@ -25,6 +25,8 @@ const (
 	defaultUsername = "Administrator"
 	defaultEmail    = "admin@morelia.com"
 
+	defaultFlowType = "group"
+
 	logFileName = "CrawlTalkCli.log"
 )
 
@@ -69,15 +71,15 @@ func main() {
 				for {
 					requestFlowList()
 					if awaitUserCommandOrExit("flow_list") {
-						break
+						return
 					}
 				}
 			} else {
 				if *flagRegister && *flagLogin != "" {
-					break
+					return
 				}
-				if *flagSignIn && *flagLogin != "" && *flagLogin != "" {
-					break
+				if *flagSignIn && *flagLogin != "" && *flagPassword != "" {
+					return
 				}
 			}
 		}

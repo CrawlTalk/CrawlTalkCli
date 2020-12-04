@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"strconv"
+	"strings"
 )
 
 func connectToServer() bool {
@@ -59,6 +60,7 @@ func authUser(login string, password string) (int64, string) {
 	}
 
 	log.Println(response.Errors.Code, response.Errors.Status, response.Errors.Detail)
+	PrintErrorCode("Auth user", response.Errors.Code, response.Errors.Status)
 	if response.Errors.Code == 200 {
 		return response.Data.User[0].UUID, response.Data.User[0].AuthId
 	} else {
@@ -96,6 +98,7 @@ func registerUser(login string, password string, username string, email string) 
 	}
 
 	log.Println(response.Errors.Code, response.Errors.Status, response.Errors.Detail)
+	PrintErrorCode("Register user", response.Errors.Code, response.Errors.Status)
 	if response.Errors.Code == 201 {
 		return response.Data.User[0].UUID, response.Data.User[0].AuthId
 	} else {
@@ -195,4 +198,46 @@ func requestMessagesList(flowId int, lastMessageTime int) int {
 	} else {
 		return lastMessageTime
 	}
+}
+
+func addFlow(flowName string, flowType string, userId int64) {
+	request := MoreliaT{
+		Type: "add_flow",
+		Data: DataT{
+			User: []UserT{
+				{
+					UUID:   uuid,
+					AuthId: authId,
+				},
+			},
+			Flow: []FlowT{
+				{
+					Type:  flowType,
+					Title: flowName,
+				},
+			},
+		},
+	}
+
+	if strings.ToLower(flowType) == "chat" {
+		request.Data.User = append(request.Data.User, UserT{UUID: userId})
+	}
+
+	body, _ := json.Marshal(request)
+
+	sendJson(body)
+
+	var response MoreliaT
+	if err := serverConnection.ReadJSON(&response); err != nil {
+		log.Println(err)
+	}
+
+	if response.Errors == nil {
+		connectToServer()
+		addFlow(flowName, flowType, userId)
+		return
+	}
+
+	log.Println(response.Errors.Code, response.Errors.Status, response.Errors.Detail)
+	PrintErrorCode("Add flow", response.Errors.Code, response.Errors.Status)
 }
