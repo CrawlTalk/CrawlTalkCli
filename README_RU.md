@@ -1,62 +1,90 @@
 # CrawlTalkCli
 
-Golang command-line client compatible with [MoreliaTalk] server and protocol.
+Клиент чата для командной строки совместимый с сервером и протоколом [MoreliaTalk], реализация на языке Golang. 
 
-Русская версия доступна здесь - [Описание на русском]
+English version available  - [here]
 
-## Release
+## Реализован функционал
 
-## Command-line options
+*Авторизация
+*Регистрация
+*Запрос списков потоков
+*Вход в поток по его ID
+*Выход из потока обратно в список потоков по команде /exit
+*Отправка сообщения в поток
+*Запрос новых сообщений по нажатию ENTER с пустым сообщением
+*Запрос сообщений с начала по комманде /inception
+*Выход из списка потоков и из программы по команде /exit
+*Создание нового потока по комманде /create
+
+По состоянию на 4 декабря 2020 ветка master сервера MoreliaTalk содержит ошибки, рекомендуется тестировать с сервером из ветки develop_highriver
+
+## Релиз
+
+[Release] - перейдите по ссылке для скачивания готовой сборки linux, win32 и win64
+
+## Опции коммандной строки
 
   -email string
   
-        Default email. For registration only. If specified client will not request it interactive.
+        Эл. почта по умолчанию. Только для режима регистрации, если параметр задан то в интерактивном режиме запрашиваться не будет.
         
   -login string
   
-        Default login. If specified client will not request it interactive.
+        Логин по умолчанию. Если параметр задан то в интерактивном режиме запрашиваться не будет.
         
   -no-color
   
-        Disable color output
+        Отключение ANSI цветов в консоли, для Windows см. раздел ниже с описанием как включить отображение цветов.
         
   -password string
   
-        Default password. If specified client will not request it interactive.
+        Пароль по умолчанию. Если параметр задан то в интерактивном режиме запрашиваться не будет.
         
   -port int
   
-        Default port. If specified client will not request it interactive.
+        Порт на сервере по умолчанию. Если параметр задан то в интерактивном режиме запрашиваться не будет.
         
   -register
   
-        Register new account
+        Автоматически зарегистрировать учетную запись. Имеет приоритет над параметром "sign-in".
         
   -schema string
   
-        Default schema (ws or wss). If specified client will not request it interactive.
+        Протокол по умолчанию (ws или wss). Если параметр задан то в интерактивном режиме запрашиваться не будет.
 
   -server string
   
-        Default server. If specified client will not request it interactive.
+        Имя или IP-адрес сервера по умолчанию. Если параметр задан то в интерактивном режиме запрашиваться не будет.
 
   -sign-in
   
-        Sign in to existed account
+        Автоматически войти в учетную запись. Если указано одновременно с параметром "register" то будет выполненна регистрация.
         
   -username string
   
-        Default username. For registration only. If specified client will not request it interactive.
+        Имя пользователя по умолчанию. Только для режима регистрации, если параметр задан то в интерактивном режиме запрашиваться не будет.
 
-## Available commands in interactive mode:
-* /help - this help page
-## Flow list mode:
-* /exit - exit from program to command prompt
-* /create - create new flow
-## In flow mode:
-* /exit - exit to flow list
-* /inception - show all flow messages from beginning
+## Комманды доступные в интерактивном режиме:
+* /help - страница со списком комманд
+## Режим списка потоков:
+* /exit - выход из программы в коммандную строку
+* /create - создать новый поток
+## Режим сообщений потока:
+* /exit - выход в список потоков
+* /inception - начать отображение сообщений с самого первого
+* ЛЮБОЙ ТЕКСТ - отправить сообщение в текущий поток
+* - пустая строка загрузит свежие сообщения с сервера
 
+## Решение проблем с отображением цветов в Windows
+
+По умолчанию включены цветные сообщения, для отключения параметр --no-color
+
+В Windows цвета поддерживаются если терминал поддерживает Ansi (Cmder, ConEmu, ANSICON, Mintty, GitBash and Cygwin)
+
+Начиная с Windows 10 TH2 (v1511) сmd.exe имеет встроенную поддержку ANSI-цветов, выключенную по умолчанию для включения:
+regedit.exe - "HKEY_CURRENT_USER\Console" - "VirtualTerminalLevel"=dword:00000001
 
 [MoreliaTalk]: https://github.com/MoreliaTalk
-[Описание на русском]: README_RU.md
+[here]: README.md
+[Release]: https://github.com/CrawlTalk/CrawlTalkCli/releases

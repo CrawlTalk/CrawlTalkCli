@@ -6,6 +6,8 @@ Golang command-line client compatible with [MoreliaTalk] server and protocol.
 
 ## Release
 
+[Release] - click here to download last executable for linux, win32 and win64
+
 ## Command-line options
 
   -email string
@@ -60,3 +62,4 @@ Golang command-line client compatible with [MoreliaTalk] server and protocol.
 
 [MoreliaTalk]: https://github.com/MoreliaTalk
 [Описание на русском]: README_RU.md
+[Release]: https://github.com/CrawlTalk/CrawlTalkCli/releases
