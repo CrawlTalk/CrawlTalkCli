@@ -36,8 +36,14 @@ var (
 	lastMessageTime  int
 	flagNoColor      = flag.Bool("no-color", false, "Disable color output")
 	flagServer       = flag.String("server", "", "Default server. If specified client will not request it interactive.")
-	flagPort         = flag.Int("port", 0, "Default server. If specified client will not request it interactive.")
-	flagSchema       = flag.String("schema", "", "Default server (ws or wss). If specified client will not request it interactive.")
+	flagPort         = flag.Int("port", 0, "Default port. If specified client will not request it interactive.")
+	flagSchema       = flag.String("schema", "", "Default schema (ws or wss). If specified client will not request it interactive.")
+	flagRegister     = flag.Bool("register", false, "Register new account")
+	flagSignIn       = flag.Bool("sign-in", false, "Sign in to existed account")
+	flagLogin        = flag.String("login", "", "Default login. If specified client will not request it interactive.")
+	flagPassword     = flag.String("password", "", "Default password. If specified client will not request it interactive.")
+	flagUserName     = flag.String("username", "", "Default username. For registration only. If specified client will not request it interactive.")
+	flagEmail        = flag.String("email", "", "Default email. For registration only. If specified client will not request it interactive.")
 )
 
 func main() {
@@ -65,6 +71,13 @@ func main() {
 					if awaitUserCommandOrExit("flow_list") {
 						break
 					}
+				}
+			} else {
+				if *flagRegister && *flagLogin != "" {
+					break
+				}
+				if *flagSignIn && *flagLogin != "" && *flagLogin != "" {
+					break
 				}
 			}
 		}

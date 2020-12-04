@@ -58,34 +58,57 @@ func requestLoginAndConnect() {
 	var username string
 	var email string
 
-	fmt.Printf("Do you want to register new account (Y/N) %s: ", color.GreenString("[%s]", defaultRegister))
-	fmt.Scanln(&register)
-	register = strings.ToUpper(register)
-	if register != "Y" {
-		register = defaultRegister
+	if *flagRegister {
+		register = "Y"
+	} else if *flagSignIn {
+		register = "N"
+	} else {
+		fmt.Printf("Do you want to register new account (Y/N) %s: ", color.GreenString("[%s]", defaultRegister))
+		fmt.Scanln(&register)
+		register = strings.ToUpper(register)
+		if register != "Y" {
+			register = defaultRegister
+		}
 	}
-	fmt.Printf("Enter login name %s: ", color.GreenString("[%s]", defaultLogin))
-	fmt.Scanln(&login)
-	if login == "" {
-		login = defaultLogin
+
+	if *flagLogin == "" {
+		fmt.Printf("Enter login name %s: ", color.GreenString("[%s]", defaultLogin))
+		fmt.Scanln(&login)
+		if login == "" {
+			login = defaultLogin
+		}
+	} else {
+		login = *flagLogin
 	}
-	fmt.Printf("Enter password %s: ", color.GreenString("[%s]", defaultPassword))
-	fmt.Scanln(&password)
-	if password == "" {
-		password = defaultPassword
+	if *flagPassword == "" {
+		fmt.Printf("Enter password %s: ", color.GreenString("[%s]", defaultPassword))
+		fmt.Scanln(&password)
+		if password == "" {
+			password = defaultPassword
+		}
+	} else {
+		password = *flagPassword
 	}
 	if register == "N" {
 		uuid, authId = authUser(login, password)
 	} else {
-		fmt.Printf("Enter username %s: ", color.GreenString("[%s]", defaultUsername))
-		fmt.Scanln(&username)
-		if username == "" {
-			username = defaultUsername
+		if *flagUserName == "" {
+			fmt.Printf("Enter username %s: ", color.GreenString("[%s]", defaultUsername))
+			fmt.Scanln(&username)
+			if username == "" {
+				username = defaultUsername
+			}
+		} else {
+			username = *flagUserName
 		}
-		fmt.Printf("Enter email %s: ", color.GreenString("[%s]", defaultEmail))
-		fmt.Scanln(&email)
-		if email == "" {
-			email = defaultEmail
+		if *flagEmail == "" {
+			fmt.Printf("Enter email %s: ", color.GreenString("[%s]", defaultEmail))
+			fmt.Scanln(&email)
+			if email == "" {
+				email = defaultEmail
+			}
+		} else {
+			email = *flagEmail
 		}
 		uuid, authId = registerUser(login, password, username, email)
 	}
