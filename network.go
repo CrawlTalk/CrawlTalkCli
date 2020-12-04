@@ -9,6 +9,18 @@ import (
 	"strconv"
 )
 
+func connectToServer() bool {
+	var err error
+	log.Printf("Connecting to: %s\n", serverUrl.String())
+	serverConnection, _, err = websocket.DefaultDialer.Dial(serverUrl.String(), nil)
+	if err != nil {
+		log.Fatal("dial:", err)
+		return false
+	}
+	log.Printf("Connection established.\n")
+	return true
+}
+
 func sendJson(body []byte) {
 	log.Println("Sending:", string(body))
 	err := serverConnection.WriteMessage(
@@ -133,18 +145,6 @@ func requestFlowList() {
 		return
 	}
 
-}
-
-func connectToServer() bool {
-	var err error
-	log.Printf("Connecting to: %s\n", serverUrl.String())
-	serverConnection, _, err = websocket.DefaultDialer.Dial(serverUrl.String(), nil)
-	if err != nil {
-		log.Fatal("dial:", err)
-		return false
-	}
-	log.Printf("Connection established.\n")
-	return true
 }
 
 func requestMessagesList(flowId int, lastMessageTime int) int {

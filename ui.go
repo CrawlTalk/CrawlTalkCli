@@ -17,24 +17,36 @@ func requestServerUrl() {
 	var server string
 	var port string
 	var protocol string
-	fmt.Printf("Enter server address %s: ", color.GreenString("[%s]", defaultServer))
-	fmt.Scanln(&server)
-	if server == "" {
-		server = defaultServer
+	if *flagServer == "" {
+		fmt.Printf("Enter server address %s: ", color.GreenString("[%s]", defaultServer))
+		fmt.Scanln(&server)
+		if server == "" {
+			server = defaultServer
+		}
+	} else {
+		server = *flagServer
 	}
-	fmt.Printf("Enter server port %s: ", color.GreenString("[%s]", defaultPort))
-	fmt.Scanln(&port)
-	if port == "" {
-		port = defaultPort
+	if *flagPort == 0 {
+		fmt.Printf("Enter server port %s: ", color.GreenString("[%s]", defaultPort))
+		fmt.Scanln(&port)
+		if port == "" {
+			port = defaultPort
+		}
+	} else {
+		port = strconv.Itoa(*flagPort)
 	}
-	fmt.Printf("Enter server scheme %s: ", color.GreenString("[%s]", defaultScheme))
-	fmt.Scanln(&protocol)
-	if protocol == "" {
-		protocol = defaultScheme
-	}
-	if protocol != "ws" && protocol != "wss" {
-		fmt.Println(color.RedString("Bad scheme, default using: %s", defaultScheme))
-		protocol = defaultScheme
+	if *flagSchema != "ws" && *flagServer != "wss" {
+		fmt.Printf("Enter server scheme  (ws, wss) %s: ", color.GreenString("[%s]", defaultScheme))
+		fmt.Scanln(&protocol)
+		if protocol == "" {
+			protocol = defaultScheme
+		}
+		if protocol != "ws" && protocol != "wss" {
+			fmt.Println(color.RedString("Bad scheme, default using: %s", defaultScheme))
+			protocol = defaultScheme
+		}
+	} else {
+		protocol = *flagSchema
 	}
 	serverUrl = url.URL{Scheme: "ws", Host: server + ":" + port, Path: defaultPath}
 }
@@ -95,7 +107,7 @@ func awaitUserCommandOrExit(mode string) bool {
 				return true
 			}
 			if strings.HasPrefix(lowCaseCommand, "/help") {
-				PrintHelp()
+				PrintHelpInteractive()
 				return false
 			}
 			if flowId, err := strconv.Atoi(lowCaseCommand); err != nil {
@@ -121,25 +133,13 @@ func awaitUserCommandOrExit(mode string) bool {
 				return false
 			}
 			if strings.HasPrefix(lowCaseCommand, "/help") {
-				PrintHelp()
+				PrintHelpInteractive()
 				return false
 			}
 			return false
 		}
 	}
 	return false
-}
-
-func PrintHelp() {
-	fmt.Println(color.HiBlueString("Available commands:"))
-	fmt.Println(color.HiBlueString("/help - this help page"))
-	fmt.Println()
-	fmt.Println(color.HiBlueString("Flow list mode:"))
-	fmt.Println(color.HiBlueString("/exit - exit from program to command prompt"))
-	fmt.Println()
-	fmt.Println(color.HiBlueString("In flow mode:"))
-	fmt.Println(color.HiBlueString("/exit - exit to flow list"))
-	fmt.Println(color.HiBlueString("/inception - show all flow messages from beginning"))
 }
 
 func EnterToFlow(flowId int) {
@@ -151,4 +151,16 @@ func EnterToFlow(flowId int) {
 			break
 		}
 	}
+}
+
+func PrintHelpInteractive() {
+	fmt.Println(color.HiBlueString("Available commands in interactive mode:"))
+	fmt.Println(color.HiBlueString("/help - this help page"))
+	fmt.Println()
+	fmt.Println(color.HiBlueString("Flow list mode:"))
+	fmt.Println(color.HiBlueString("/exit - exit from program to command prompt"))
+	fmt.Println()
+	fmt.Println(color.HiBlueString("In flow mode:"))
+	fmt.Println(color.HiBlueString("/exit - exit to flow list"))
+	fmt.Println(color.HiBlueString("/inception - show all flow messages from beginning"))
 }

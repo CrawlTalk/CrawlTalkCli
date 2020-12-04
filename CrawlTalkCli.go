@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"sync"
 )
 
 const (
@@ -25,6 +24,8 @@ const (
 	defaultPassword = "admin"
 	defaultUsername = "Administrator"
 	defaultEmail    = "admin@morelia.com"
+
+	logFileName = "CrawlTalkCli.log"
 )
 
 var (
@@ -34,11 +35,13 @@ var (
 	serverConnection *websocket.Conn
 	lastMessageTime  int
 	flagNoColor      = flag.Bool("no-color", false, "Disable color output")
-	mu               sync.Mutex
+	flagServer       = flag.String("server", "", "Default server. If specified client will not request it interactive.")
+	flagPort         = flag.Int("port", 0, "Default server. If specified client will not request it interactive.")
+	flagSchema       = flag.String("schema", "", "Default server (ws or wss). If specified client will not request it interactive.")
 )
 
 func main() {
-	logfile, err := os.OpenFile("CrawlTalkCli.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	logfile, err := os.OpenFile(logFileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
