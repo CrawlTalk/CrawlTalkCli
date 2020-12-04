@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 
@@ -114,54 +116,60 @@ func requestLoginAndConnect() {
 	}
 }
 
-func awaitUserCommandOrExit(mode string) bool {
+func awaitUserCommandOrExit(mode string, flowId int) bool {
+	scanner := bufio.NewScanner(os.Stdin)
 	var command string
 	if mode == "flow_list" {
 		fmt.Printf("%s", color.HiGreenString("Enter flow ID or system command: "))
-		fmt.Scanln(&command)
-		if command == "" {
-			return false
-		} else {
-			lowCaseCommand := strings.ToLower(command)
-			if strings.HasPrefix(lowCaseCommand, "/exit") {
-				println("1")
-				return true
-			}
-			if strings.HasPrefix(lowCaseCommand, "/create") {
-				requestFlowParam()
+		if scanner.Scan() {
+			command = scanner.Text()
+			if command == "" {
 				return false
-			}
-			if strings.HasPrefix(lowCaseCommand, "/help") {
-				PrintHelpInteractive()
-				return false
-			}
-			if flowId, err := strconv.Atoi(lowCaseCommand); err != nil {
-				fmt.Println(color.RedString("Unknown command"))
 			} else {
-				EnterToFlow(flowId)
+				lowCaseCommand := strings.ToLower(command)
+				if strings.HasPrefix(lowCaseCommand, "/exit") {
+					println("1")
+					return true
+				}
+				if strings.HasPrefix(lowCaseCommand, "/create") {
+					requestFlowParam()
+					return false
+				}
+				if strings.HasPrefix(lowCaseCommand, "/help") {
+					PrintHelpInteractive()
+					return false
+				}
+				if flowId, err := strconv.Atoi(lowCaseCommand); err != nil {
+					fmt.Println(color.RedString("Unknown command"))
+				} else {
+					EnterToFlow(flowId)
+				}
+				return false
 			}
-			return false
 		}
 	}
 	if mode == "message_list" {
 		fmt.Printf("%s", color.HiGreenString("Type message text or system command: "))
-		fmt.Scanln(&command)
-		if command == "" {
-			return false
-		} else {
-			lowCaseCommand := strings.ToLower(command)
-			if strings.HasPrefix(lowCaseCommand, "/exit") {
-				return true
-			}
-			if strings.HasPrefix(lowCaseCommand, "/inception") {
-				lastMessageTime = 1
+		if scanner.Scan() {
+			command = scanner.Text()
+			if command == "" {
+				return false
+			} else {
+				lowCaseCommand := strings.ToLower(command)
+				if strings.HasPrefix(lowCaseCommand, "/exit") {
+					return true
+				}
+				if strings.HasPrefix(lowCaseCommand, "/inception") {
+					lastMessageTime = 1
+					return false
+				}
+				if strings.HasPrefix(lowCaseCommand, "/help") {
+					PrintHelpInteractive()
+					return false
+				}
+				sendMessage(flowId, command)
 				return false
 			}
-			if strings.HasPrefix(lowCaseCommand, "/help") {
-				PrintHelpInteractive()
-				return false
-			}
-			return false
 		}
 	}
 	return false
@@ -172,7 +180,7 @@ func EnterToFlow(flowId int) {
 	fmt.Println(color.CyanString("Opened flow ID %d", flowId))
 	for {
 		lastMessageTime = requestMessagesList(flowId, lastMessageTime)
-		if awaitUserCommandOrExit("message_list") {
+		if awaitUserCommandOrExit("message_list", flowId) {
 			break
 		}
 	}

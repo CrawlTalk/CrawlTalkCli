@@ -220,6 +220,7 @@ func addFlow(flowName string, flowType string, userId int64) {
 	}
 
 	if strings.ToLower(flowType) == "chat" {
+		print("1")
 		request.Data.User = append(request.Data.User, UserT{UUID: userId})
 	}
 
@@ -240,4 +241,44 @@ func addFlow(flowName string, flowType string, userId int64) {
 
 	log.Println(response.Errors.Code, response.Errors.Status, response.Errors.Detail)
 	PrintErrorCode("Add flow", response.Errors.Code, response.Errors.Status)
+}
+
+func sendMessage(flowId int, text string) {
+	request := MoreliaT{
+		Type: "send_message",
+		Data: DataT{
+			User: []UserT{
+				{
+					UUID:   uuid,
+					AuthId: authId,
+				},
+			},
+			Flow: []FlowT{
+				{
+					ID: flowId,
+				},
+			},
+			Message: []MessageT{
+				{
+					Text: text,
+				},
+			},
+		},
+	}
+
+	body, _ := json.Marshal(request)
+
+	sendJson(body)
+
+	var response MoreliaT
+	if err := serverConnection.ReadJSON(&response); err != nil {
+		log.Println(err)
+	}
+
+	if response.Errors == nil {
+		connectToServer()
+		sendMessage(flowId, text)
+		return
+	}
+	log.Println(response.Errors.Code, response.Errors.Status, response.Errors.Detail)
 }

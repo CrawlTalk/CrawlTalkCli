@@ -70,7 +70,7 @@ func main() {
 			if authId != "" {
 				for {
 					requestFlowList()
-					if awaitUserCommandOrExit("flow_list") {
+					if awaitUserCommandOrExit("flow_list", 0) {
 						return
 					}
 				}
